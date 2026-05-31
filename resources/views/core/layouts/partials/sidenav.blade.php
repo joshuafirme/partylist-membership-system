@@ -3,14 +3,14 @@
         <!-- Dynamic Logo Implementation -->
         @if (!empty($settings->logo_path))
             <img src="{{ asset('storage/' . $settings->logo_path) }}" alt="Logo"
-                class="w-auto mr-3 object-contain" style="height: 60px;">
+                class="w-auto m-3 object-contain" style="height: 60px;">
         @else
             <i class="fa-solid fa-layer-group text-blue-600 text-xl mr-3"></i>
         @endif
 
-        {{-- <span class="text-lg font-semibold text-slate-900 truncate">
+        <span class="text-lg font-semibold text-slate-900 truncate">
             {{ $settings->app_name ?? 'System Portal' }}
-        </span> --}}
+        </span>
     </div>
     <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto custom-scrollbar">
 
