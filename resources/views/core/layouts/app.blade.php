@@ -54,8 +54,6 @@
         </div>
     </div>
 
-    @stack('script')
-
     <script>
         document.addEventListener("DOMContentLoaded", function() {
 
@@ -152,6 +150,7 @@
     </script>
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    @stack('script')
     <script src="{{ asset('assets/js/sweetalert2.min.js') }}"></script>
     <script>
         $(document).on('click', '.nav-toggle-btn', function() {
