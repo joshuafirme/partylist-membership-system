@@ -100,7 +100,7 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 text-right whitespace-nowrap">
-                                    <div class="flex items-center justify-end space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <div class="flex items-center justify-end space-x-2">
                                         
                                         <button type="button" data-target="#eventModal"
                                             data-role="fill-modal" data-mode="edit"

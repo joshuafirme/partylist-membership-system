@@ -100,7 +100,7 @@
                                     <div class="text-xs text-blue-600 mt-0.5 font-medium">{{ $log->time_in->diffForHumans() }}</div>
                                 </td>
                                 <td class="px-6 py-4 text-right whitespace-nowrap">
-                                    <div class="flex items-center justify-end opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <div class="flex items-center justify-end">
                                         <button type="button" 
                                             class="delete-btn p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                                             data-url="{{ route('attendances.destroy', $log->id) }}"

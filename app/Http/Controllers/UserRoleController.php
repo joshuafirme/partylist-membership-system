@@ -21,20 +21,41 @@ class UserRoleController extends Controller
             'System Access' => [
                 'all' => 'Full System Access (Super Admin)',
             ],
-            'User Management' => [
-                'manage_users' => 'Manage All Users',
-                'manage_regional_users' => 'Manage Regional Users',
-                'manage_city_users' => 'Manage City Users',
-                'manage_team' => 'Manage Team Members',
+
+            // Maps to "Teams" Nav Item
+            'Teams' => [
+                'view_teams' => 'View Teams List',
+                'manage_teams' => 'Create, Update, & Delete Teams',
             ],
-            'Events & Attendance' => [
-                'manage_events' => 'Create & Manage Events',
-                'view_events' => 'View Events',
-                'scan_qr' => 'Scan QR Codes (Attendance)',
+
+            // Maps to "Events" Nav Item
+            'Events' => [
+                'view_events' => 'View Events List',
+                'manage_events' => 'Create, Update, & Delete Events',
             ],
-            'Reporting' => [
-                'view_reports' => 'View System Reports',
-                'view_profile' => 'View Profiles',
+
+            // Maps to "QR Scanner" Nav Item
+            'QR Scanner' => [
+                'scan_qr' => 'Access Live QR Scanner',
+            ],
+
+            // Maps to "Attendance History" Nav Item
+            'Attendance History' => [
+                'view_attendances' => 'View Attendance Logs',
+                'manage_attendances' => 'Execute Manual Overrides & Delete Logs',
+            ],
+
+            // Maps to "Members" Nav Item
+            'Members Directory' => [
+                'view_members' => 'View Constituents & e-IDs',
+                'manage_members' => 'Register, Update, & Delete Members',
+            ],
+
+            // Maps to "Administration" Dropdown Nav Items
+            'Administration' => [
+                'manage_users' => 'Manage System Users',
+                'manage_roles' => 'Manage User Roles & Permissions',
+                'manage_settings' => 'Update System Settings & Brand Assets',
             ]
         ];
 
@@ -49,14 +70,14 @@ class UserRoleController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:user_roles,name',
             // Permissions can be null if they save a role with no checkboxes selected
-            'permissions' => 'nullable|array', 
+            'permissions' => 'nullable|array',
             'permissions.*' => 'string',
         ]);
 
         UserRole::create([
             'name' => $validated['name'],
             // If permissions is null, default to an empty array
-            'permissions' => $validated['permissions'] ?? [], 
+            'permissions' => $validated['permissions'] ?? [],
         ]);
 
         return redirect()->route('user-roles.index')

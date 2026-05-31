@@ -119,7 +119,7 @@
                                 </td>
                                 <td class="px-6 py-4 text-right whitespace-nowrap">
                                     <div
-                                        class="flex items-center justify-end space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        class="flex items-center justify-end space-x-2">
                                        <a href="{{ route('members.eid', $member->id) }}" target="_blank"
                                             class="p-2 text-slate-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
                                             title="View Digital e-ID">

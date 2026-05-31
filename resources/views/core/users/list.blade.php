@@ -93,7 +93,7 @@
                                 </td>
                                 <td class="px-6 py-4 text-right whitespace-nowrap">
                                     <div
-                                        class="flex items-center justify-end space-x-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        class="flex items-center justify-end space-x-2">
 
                                         <button type="button" data-target="#userModal" data-role="fill-modal"
                                             data-mode="edit" data-action="{{ route('users.update', $user->id) }}"

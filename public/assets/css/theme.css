@@ -1,0 +1,51 @@
+/* ==========================================
+   GLOBAL DARK THEME OVERRIDES
+   ========================================== */
+body.dark-theme {
+    background-color: #0f172a !important; /* slate-900 */
+    color: #f8fafc !important;
+}
+
+/* Convert panel backgrounds */
+body.dark-theme .bg-white {
+    background-color: #1e293b !important; /* slate-800 */
+}
+
+/* Convert light gray backgrounds (table headers, filters, sidebars) */
+body.dark-theme .bg-slate-50,
+body.dark-theme .bg-slate-100 {
+    background-color: #0f172a !important; /* slate-900 */
+}
+
+/* Subdue borders */
+body.dark-theme .border-slate-100,
+body.dark-theme .border-slate-200,
+body.dark-theme .border-slate-300 {
+    border-color: #334155 !important; /* slate-700 */
+}
+
+/* Invert text colors */
+body.dark-theme .text-slate-900,
+body.dark-theme .text-slate-800,
+body.dark-theme .text-slate-700 {
+    color: #f8fafc !important; /* slate-50 */
+}
+
+body.dark-theme .text-slate-600,
+body.dark-theme .text-slate-500 {
+    color: #94a3b8 !important; /* slate-400 */
+}
+
+/* Handle Table Row Hover States */
+body.dark-theme tr.hover\:bg-slate-50\/50:hover {
+    background-color: rgba(255, 255, 255, 0.03) !important;
+}
+
+/* Fix Input Fields */
+body.dark-theme input.bg-slate-50,
+body.dark-theme select.bg-slate-50,
+body.dark-theme textarea.bg-slate-50 {
+    background-color: #0f172a !important;
+    color: #f8fafc !important;
+    border-color: #475569 !important;
+}

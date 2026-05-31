@@ -14,7 +14,16 @@
     <div class="w-full max-w-md bg-white rounded-xl shadow-sm border border-slate-100 p-8">
         <div class="text-center mb-8">
             <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-50 text-blue-600 mb-4">
-                <i class="fa-solid fa-shield-halved text-xl"></i>
+                @if (!empty($settings->logo_path))
+                    <img src="{{ asset('storage/' . $settings->logo_path) }}" alt="Logo"
+                        class="w-auto m-3 object-contain" style="height: 60px;">
+                @else
+                    <i class="fa-solid fa-layer-group text-blue-600 text-xl mr-3"></i>
+                @endif
+
+                <span class="text-lg font-semibold text-slate-900">
+                    {{ $settings->app_name ?? 'System Portal' }}
+                </span>
             </div>
             <h1 class="text-2xl font-semibold text-slate-900">Welcome back</h1>
             <p class="text-sm text-slate-500 mt-1">Please enter your details to sign in.</p>
@@ -57,7 +66,6 @@
                         class="w-4 h-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500">
                     <span class="ml-2 text-sm text-slate-600">Remember me</span>
                 </label>
-                <a href="#" class="text-sm text-blue-600 hover:text-blue-700 font-medium">Forgot password?</a>
             </div>
 
             <button type="submit"
