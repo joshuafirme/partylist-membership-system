@@ -39,6 +39,22 @@ class MemberController extends Controller
             $query->where('voter_status', $request->voter_status);
         }
 
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%')
+                ->orWhere('membership_number', 'like', '%' . $request->search . '%');
+        }
+
+        // Apply Team Filter
+        if ($request->filled('team_id')) {
+            $query->where('team_id', $request->team_id);
+        }
+
+        // Apply Leader (Coordinator) Filter
+        if ($request->filled('coordinator_id')) {
+            $query->where('coordinator_id', $request->coordinator_id);
+        }
+
+        // Ensure pagination remembers the filters
         $members = $query->latest()->paginate(15);
 
         // Fetch data for the modal dropdowns
@@ -158,5 +174,58 @@ class MemberController extends Controller
 
         return redirect()->route('members.index')
             ->with('success', 'Member deleted successfully.');
+    }
+
+    public function export(Request $request)
+    {
+        $query = User::query()->with(['team', 'coordinator', 'role']);
+
+        // Apply the same filters for the export
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('membership_number', 'like', '%' . $request->search . '%');
+        }
+        if ($request->filled('team_id')) {
+            $query->where('team_id', $request->team_id);
+        }
+        if ($request->filled('coordinator_id')) {
+            $query->where('coordinator_id', $request->coordinator_id);
+        }
+
+        $members = $query->get();
+
+        $fileName = 'Members_Export_' . date('Y-m-d_H-i-s') . '.csv';
+
+        $headers = [
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$fileName",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $columns = ['Membership No', 'Name', 'Mobile Number', 'Role', 'Team', 'Leader (Coordinator)', 'Barangay', 'Voter Status'];
+
+        $callback = function() use($members, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+
+            foreach ($members as $member) {
+                $row = [
+                    $member->membership_number,
+                    $member->name,
+                    $member->mobile_number,
+                    $member->role->name ?? 'N/A',
+                    $member->team->name ?? 'N/A',
+                    $member->coordinator->name ?? 'Direct (No Leader)',
+                    $member->barangay,
+                    ucfirst($member->voter_status)
+                ];
+                fputcsv($file, $row);
+            }
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }

@@ -39,6 +39,7 @@ Route::middleware(['auth'])->group(function () {
     // MEMBERS DIRECTORY
     // ==========================================
     Route::middleware('can:view_members')->group(function () {
+        Route::get('/members/export', [MemberController::class, 'export'])->name('members.export');
         Route::resource('members', MemberController::class)->only(['index']);
         Route::get('/members/{member}/e-id', [MemberController::class, 'showEid'])->name('members.eid');
     });
