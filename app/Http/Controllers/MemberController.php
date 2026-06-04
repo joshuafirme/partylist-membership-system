@@ -17,7 +17,7 @@ class MemberController extends Controller
     public function index(Request $request)
     {
         // Eager load relationships
-        $query = User::with(['role', 'team']);
+        $query = User::query();
 
         // Exclude Super Admins from the Members list (keep them in the Admin Users page)
         $query->whereHas('role', function ($q) {
@@ -47,7 +47,11 @@ class MemberController extends Controller
         // Only fetch constituent-level roles
         $roles = UserRole::whereNotIn('name', ['Super Admin', 'National Admin'])->orderBy('name')->get();
 
-        return view('core.members.list', compact('members', 'teams', 'roles'));
+        $coordinators = User::whereHas('role', function ($q) {
+            $q->whereIn('name', config('campaign.leader_roles'));
+        })->orderBy('name')->get();
+
+        return view('core.members.list', compact('members', 'teams', 'roles', 'coordinators'));
     }
 
     public function showEid(User $member)
@@ -81,6 +85,7 @@ class MemberController extends Controller
             'province' => 'nullable|string|max:255',
             'precinct_no' => 'nullable|string|max:50',
             'status' => 'required|integer',
+            'coordinator_id' => 'nullable|exists:users,id',
         ]);
 
         // Auto-generate unique Membership Number (e.g., PL-2026-ABC123)
@@ -120,6 +125,7 @@ class MemberController extends Controller
             'province' => 'nullable|string|max:255',
             'precinct_no' => 'nullable|string|max:50',
             'status' => 'required|integer',
+            'coordinator_id' => 'nullable|exists:users,id',
         ]);
 
         // Auto-generate Membership Number ONLY if they don't have one yet

@@ -45,10 +45,11 @@ class User extends Authenticatable
         'membership_number',
         'qr_token',
         'status',
-        
+
         // External Integrations
         'registered_from',
         'external_id',
+        'coordinator_id'
     ];
 
     /**
@@ -72,6 +73,22 @@ class User extends Authenticatable
         'birthday' => 'date',
         'password' => 'hashed',
     ];
+
+    /**
+     * Get the Leader/Coordinator of this voter.
+     */
+    public function coordinator()
+    {
+        return $this->belongsTo(User::class, 'coordinator_id');
+    }
+
+    /**
+     * Get all voters recruited by this Leader.
+     */
+    public function recruits()
+    {
+        return $this->hasMany(User::class, 'coordinator_id');
+    }
 
     /**
      * Get the system role associated with the user.

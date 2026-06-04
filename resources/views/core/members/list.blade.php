@@ -84,6 +84,20 @@
                                                 <i class="fa-solid fa-people-group mr-1"></i>
                                                 {{ $member->team->name ?? 'No Team' }}
                                             </div>
+                                            @if ($member->role?->name && in_array($member->role->name, config('campaign.leader_roles')))
+                                                <div class="mt-1.5">
+                                                    <span
+                                                        class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-700 border border-blue-200 uppercase tracking-wide">
+                                                        <i class="fa-solid fa-star mr-1"></i> Leader
+                                                    </span>
+                                                </div>
+                                            @endif
+                                            @if ($member->coordinator)
+                                                <div class="text-xs text-amber-600 mt-0.5 font-medium">
+                                                    <i class="fa-solid fa-link mr-1"></i> Under:
+                                                    {{ $member->coordinator->name }}
+                                                </div>
+                                            @endif
                                         </div>
                                     </div>
                                 </td>
@@ -118,9 +132,8 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 text-right whitespace-nowrap">
-                                    <div
-                                        class="flex items-center justify-end space-x-2">
-                                       <a href="{{ route('members.eid', $member->id) }}" target="_blank"
+                                    <div class="flex items-center justify-end space-x-2">
+                                        <a href="{{ route('members.eid', $member->id) }}" target="_blank"
                                             class="p-2 text-slate-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
                                             title="View Digital e-ID">
                                             <i class="fa-solid fa-id-badge text-lg"></i>
@@ -136,6 +149,7 @@
                                             data-precinct_no="{{ $member->precinct_no }}"
                                             data-user_role_id="{{ $member->user_role_id }}"
                                             data-team_id="{{ $member->team_id }}" data-status="{{ $member->status }}"
+                                            data-coordinator_id="{{ $member->coordinator_id }}"
                                             class="open-modal-btn p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
                                             title="Edit Profile">
                                             <i class="fa-regular fa-pen-to-square"></i>
@@ -178,22 +192,28 @@
         </div>
     </div>
 
-<!-- ================= e-ID Viewer Modal ================= -->
-    <div id="eidModal" class="modal fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/80 backdrop-blur-sm transition-opacity" aria-hidden="true">
+    <!-- ================= e-ID Viewer Modal ================= -->
+    <div id="eidModal"
+        class="modal fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/80 backdrop-blur-sm transition-opacity"
+        aria-hidden="true">
         <div class="relative w-full max-w-sm bg-transparent flex flex-col items-center justify-center p-4">
 
             <!-- Close Button -->
-            <button type="button" class="close-modal absolute top-0 right-0 p-3 text-slate-300 hover:text-white transition-colors z-10" aria-label="Close">
+            <button type="button"
+                class="close-modal absolute top-0 right-0 p-3 text-slate-300 hover:text-white transition-colors z-10"
+                aria-label="Close">
                 <i class="fa-solid fa-xmark text-2xl"></i>
             </button>
 
             <!-- Digital ID Card Container -->
             <div class="bg-white w-full rounded-2xl shadow-2xl overflow-hidden relative border border-slate-200">
-                
+
                 <!-- Card Header (Partylist Branding) -->
                 <div class="bg-gradient-to-r from-blue-700 to-blue-500 h-28 relative">
                     <!-- Subtle background pattern -->
-                    <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 10px 10px;"></div>
+                    <div class="absolute inset-0 opacity-20"
+                        style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 10px 10px;">
+                    </div>
                     <div class="text-center pt-5 text-white font-bold tracking-widest text-xs uppercase opacity-90">
                         Official Partylist e-ID
                     </div>
@@ -201,10 +221,12 @@
 
                 <!-- Profile Photo (Overlapping) -->
                 <div class="flex justify-center -mt-14 relative z-10">
-                    <div class="w-28 h-28 rounded-full border-4 border-white bg-slate-100 flex items-center justify-center shadow-md overflow-hidden relative">
+                    <div
+                        class="w-28 h-28 rounded-full border-4 border-white bg-slate-100 flex items-center justify-center shadow-md overflow-hidden relative">
                         <!-- Placeholder for actual photo -->
                         <i class="fa-solid fa-user text-4xl text-slate-300 absolute"></i>
-                        <span id="eid-initials" class="font-bold text-slate-600 text-3xl uppercase z-10 relative bg-slate-100 w-full h-full flex items-center justify-center">XX</span>
+                        <span id="eid-initials"
+                            class="font-bold text-slate-600 text-3xl uppercase z-10 relative bg-slate-100 w-full h-full flex items-center justify-center">XX</span>
                     </div>
                 </div>
 
@@ -213,12 +235,14 @@
                     <h2 id="eid-name" class="text-xl font-bold text-slate-900 uppercase tracking-wide">Member Name</h2>
                     <p id="eid-team" class="text-sm font-semibold text-blue-600 mt-1">Team Designation</p>
                     <p id="eid-location" class="text-xs text-slate-500 mt-1 flex items-center justify-center">
-                        <i class="fa-solid fa-location-dot mr-1 text-slate-400"></i> <span id="eid-loc-text">City, Province</span>
+                        <i class="fa-solid fa-location-dot mr-1 text-slate-400"></i> <span id="eid-loc-text">City,
+                            Province</span>
                     </p>
 
                     <div class="mt-5 pt-4 border-t border-slate-100 border-dashed">
                         <p class="text-[10px] text-slate-400 uppercase tracking-wider mb-1">Membership Number</p>
-                        <p id="eid-number" class="text-lg font-mono font-bold text-slate-800 bg-slate-50 py-1.5 rounded-lg border border-slate-100">
+                        <p id="eid-number"
+                            class="text-lg font-mono font-bold text-slate-800 bg-slate-50 py-1.5 rounded-lg border border-slate-100">
                             PL-2026-XXXXXX
                         </p>
                     </div>
@@ -226,9 +250,11 @@
 
                 <!-- QR Code Verification Area -->
                 <div class="bg-slate-50 p-6 flex flex-col items-center justify-center border-t border-slate-100">
-                    <div class="w-36 h-36 bg-white border-2 border-slate-200 rounded-xl shadow-sm flex items-center justify-center mb-3 p-2">
+                    <div
+                        class="w-36 h-36 bg-white border-2 border-slate-200 rounded-xl shadow-sm flex items-center justify-center mb-3 p-2">
                         <!-- Dynamic QR Code Image will load here -->
-                        <img id="eid-qr-image" src="" alt="QR Code" class="w-full h-full object-contain hidden" />
+                        <img id="eid-qr-image" src="" alt="QR Code"
+                            class="w-full h-full object-contain hidden" />
                         <i id="eid-qr-placeholder" class="fa-solid fa-qrcode text-6xl text-slate-300"></i>
                     </div>
                     <p class="text-[10px] text-slate-500 text-center max-w-[220px] leading-relaxed">
@@ -239,7 +265,8 @@
 
             <!-- External Actions -->
             <div class="mt-6 flex gap-3 w-full max-w-sm">
-                <button type="button" onclick="window.print()" class="flex-1 bg-white/10 hover:bg-white/20 text-white py-2.5 rounded-lg text-sm font-medium transition-colors backdrop-blur-sm border border-white/20 flex items-center justify-center">
+                <button type="button" onclick="window.print()"
+                    class="flex-1 bg-white/10 hover:bg-white/20 text-white py-2.5 rounded-lg text-sm font-medium transition-colors backdrop-blur-sm border border-white/20 flex items-center justify-center">
                     <i class="fa-solid fa-print mr-2"></i> Print / PDF
                 </button>
             </div>
@@ -296,6 +323,18 @@
                         <h6 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">System Assignment
                         </h6>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-1">Assigned Leader /
+                                    Coordinator</label>
+                                <select name="coordinator_id" id="coordinator_id"
+                                    class="w-full bg-slate-900 border border-slate-600 text-white rounded-lg px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors">
+                                    <option value="">-- Direct Voter (No Leader) --</option>
+                                    @foreach ($coordinators as $leader)
+                                        <option value="{{ $leader->id }}">{{ $leader->name }} -
+                                            {{ $leader->barangay }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                             <div>
                                 <label class="block text-sm font-medium text-slate-300 mb-1">Primary Team</label>
                                 <select name="team_id" id="team_id"
