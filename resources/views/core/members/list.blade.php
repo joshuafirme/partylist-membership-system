@@ -161,11 +161,20 @@
                                 </td>
                                 <td class="px-6 py-4 text-right whitespace-nowrap">
                                     <div class="flex items-center justify-end space-x-2">
-                                        <a href="{{ route('members.eid', $member->id) }}" target="_blank"
-                                            class="p-2 text-slate-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+                                        <button type="button"
+                                            class="open-eid-btn p-2 text-slate-400 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+                                            data-name="{{ $member->name }}"
+                                            data-membership_number="{{ $member->membership_number ?? 'PENDING' }}"
+                                            data-role="{{ $member->role->name ?? 'Constituent' }}"
+                                            data-team="{{ $member->team->name ?? 'Unassigned' }}"
+                                            data-barangay="{{ $member->barangay ?? 'N/A' }}"
+                                            data-city="{{ $member->city ?? 'N/A' }}"
+                                            data-precinct="{{ $member->precinct_no ?? 'N/A' }}"
+                                            data-voter_status="{{ $member->voter_status === 'registered' ? 'Registered Voter' : 'Unregistered' }}"
+                                            data-status="{{ $member->status }}" data-token="{{ $member->qr_token }}"
                                             title="View Digital e-ID">
                                             <i class="fa-solid fa-id-badge text-lg"></i>
-                                        </a>
+                                        </button>
                                         <button type="button" data-target="#memberModal" data-role="fill-modal"
                                             data-mode="edit" data-action="{{ route('members.update', $member->id) }}"
                                             data-method="PUT" data-module="Member" data-name="{{ $member->name }}"
@@ -220,86 +229,6 @@
         </div>
     </div>
 
-    <!-- ================= e-ID Viewer Modal ================= -->
-    <div id="eidModal"
-        class="modal fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/80 backdrop-blur-sm transition-opacity"
-        aria-hidden="true">
-        <div class="relative w-full max-w-sm bg-transparent flex flex-col items-center justify-center p-4">
-
-            <!-- Close Button -->
-            <button type="button"
-                class="close-modal absolute top-0 right-0 p-3 text-slate-300 hover:text-white transition-colors z-10"
-                aria-label="Close">
-                <i class="fa-solid fa-xmark text-2xl"></i>
-            </button>
-
-            <!-- Digital ID Card Container -->
-            <div class="bg-white w-full rounded-2xl shadow-2xl overflow-hidden relative border border-slate-200">
-
-                <!-- Card Header (Partylist Branding) -->
-                <div class="bg-gradient-to-r from-blue-700 to-blue-500 h-28 relative">
-                    <!-- Subtle background pattern -->
-                    <div class="absolute inset-0 opacity-20"
-                        style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 10px 10px;">
-                    </div>
-                    <div class="text-center pt-5 text-white font-bold tracking-widest text-xs uppercase opacity-90">
-                        Official Partylist e-ID
-                    </div>
-                </div>
-
-                <!-- Profile Photo (Overlapping) -->
-                <div class="flex justify-center -mt-14 relative z-10">
-                    <div
-                        class="w-28 h-28 rounded-full border-4 border-white bg-slate-100 flex items-center justify-center shadow-md overflow-hidden relative">
-                        <!-- Placeholder for actual photo -->
-                        <i class="fa-solid fa-user text-4xl text-slate-300 absolute"></i>
-                        <span id="eid-initials"
-                            class="font-bold text-slate-600 text-3xl uppercase z-10 relative bg-slate-100 w-full h-full flex items-center justify-center">XX</span>
-                    </div>
-                </div>
-
-                <!-- Member Data -->
-                <div class="text-center px-6 pt-3 pb-6">
-                    <h2 id="eid-name" class="text-xl font-bold text-slate-900 uppercase tracking-wide">Member Name</h2>
-                    <p id="eid-team" class="text-sm font-semibold text-blue-600 mt-1">Team Designation</p>
-                    <p id="eid-location" class="text-xs text-slate-500 mt-1 flex items-center justify-center">
-                        <i class="fa-solid fa-location-dot mr-1 text-slate-400"></i> <span id="eid-loc-text">City,
-                            Province</span>
-                    </p>
-
-                    <div class="mt-5 pt-4 border-t border-slate-100 border-dashed">
-                        <p class="text-[10px] text-slate-400 uppercase tracking-wider mb-1">Membership Number</p>
-                        <p id="eid-number"
-                            class="text-lg font-mono font-bold text-slate-800 bg-slate-50 py-1.5 rounded-lg border border-slate-100">
-                            PL-2026-XXXXXX
-                        </p>
-                    </div>
-                </div>
-
-                <!-- QR Code Verification Area -->
-                <div class="bg-slate-50 p-6 flex flex-col items-center justify-center border-t border-slate-100">
-                    <div
-                        class="w-36 h-36 bg-white border-2 border-slate-200 rounded-xl shadow-sm flex items-center justify-center mb-3 p-2">
-                        <!-- Dynamic QR Code Image will load here -->
-                        <img id="eid-qr-image" src="" alt="QR Code"
-                            class="w-full h-full object-contain hidden" />
-                        <i id="eid-qr-placeholder" class="fa-solid fa-qrcode text-6xl text-slate-300"></i>
-                    </div>
-                    <p class="text-[10px] text-slate-500 text-center max-w-[220px] leading-relaxed">
-                        Scan this QR code during official events and rallies for verified attendance.
-                    </p>
-                </div>
-            </div>
-
-            <!-- External Actions -->
-            <div class="mt-6 flex gap-3 w-full max-w-sm">
-                <button type="button" onclick="window.print()"
-                    class="flex-1 bg-white/10 hover:bg-white/20 text-white py-2.5 rounded-lg text-sm font-medium transition-colors backdrop-blur-sm border border-white/20 flex items-center justify-center">
-                    <i class="fa-solid fa-print mr-2"></i> Print / PDF
-                </button>
-            </div>
-        </div>
-    </div>
 
     <!-- ================= Member Modal ================= -->
     <div id="memberModal"
@@ -450,8 +379,191 @@
             </form>
         </div>
     </div>
+    <style>
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+
+            #eidModal,
+            #eidModal * {
+                visibility: visible;
+            }
+
+            #eidModal {
+                position: absolute;
+                left: 0;
+                top: 0;
+                background: white !important;
+                width: 100%;
+                height: 100%;
+            }
+
+            .print-card {
+                box-shadow: none !important;
+                border: 1px solid #e2e8f0 !important;
+                margin: 0 auto !important;
+                transform: scale(1) !important;
+            }
+
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+
+   <div id="eidModal" class="modal fixed inset-0 z-[60] hidden items-center justify-center bg-slate-900/80 backdrop-blur-sm transition-opacity" aria-hidden="true">
+        <div class="relative w-full max-w-sm mx-4 flex flex-col items-center">
+            
+            <!-- Toolbar -->
+            <div class="no-print w-full flex justify-end items-center mb-4 space-x-2">
+                <button onclick="window.print()" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center">
+                    <i class="fa-solid fa-print mr-2"></i> Print
+                </button>
+                <button type="button" class="close-eid-modal bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded-lg text-sm font-medium transition-colors shadow-sm flex items-center">
+                    <i class="fa-solid fa-xmark mr-2"></i> Close
+                </button>
+            </div>
+
+            <!-- The ID Card -->
+            <div class="print-card bg-white w-full max-w-[340px] rounded-2xl shadow-xl overflow-hidden relative border border-slate-200">
+                
+                <!-- Header / Banner Area -->
+                <div class="bg-blue-600 px-6 pt-6 pb-12 text-center relative overflow-hidden">
+                    <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-white opacity-10"></div>
+                    <div class="absolute bottom-0 left-0 -ml-8 -mb-8 w-24 h-24 rounded-full bg-white opacity-10"></div>
+                    
+                    <!-- Dynamic App Name and Voter Status -->
+                    <h1 class="text-white font-bold text-lg tracking-wide uppercase relative z-10">{{ $settings->app_name ?? 'System Portal' }}</h1>
+                    <p id="eid-voter-status" class="text-blue-100 text-[10px] mt-1 relative z-10 font-medium tracking-widest uppercase"></p>
+                </div>
+
+                <!-- Profile Photo Placeholder -->
+                <div class="flex justify-center -mt-12 relative z-20">
+                    <div class="w-24 h-24 bg-white rounded-full p-1 shadow-md">
+                        <div id="eid-avatar" class="w-full h-full rounded-full bg-slate-100 text-blue-600 flex items-center justify-center text-3xl font-bold uppercase">
+                            <!-- Initial injected via JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Member Details -->
+                <div class="px-6 pt-4 pb-6 text-center">
+                    <h2 id="eid-name" class="text-xl font-bold text-slate-900 leading-tight"></h2>
+                    <p id="eid-role" class="text-sm text-blue-600 font-semibold mt-1"></p>
+                    
+                    <div class="mt-4 bg-slate-50 rounded-lg p-3 border border-slate-100 text-left space-y-2.5">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[10px] uppercase text-slate-500 font-semibold tracking-wider">ID Number</span>
+                            <span id="eid-number" class="text-xs font-mono font-bold text-slate-800"></span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-[10px] uppercase text-slate-500 font-semibold tracking-wider">Team</span>
+                            <span id="eid-team" class="text-xs font-medium text-slate-800"></span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-[10px] uppercase text-slate-500 font-semibold tracking-wider">Location</span>
+                            <span id="eid-location" class="text-xs font-medium text-slate-800 truncate max-w-[140px] text-right"></span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-[10px] uppercase text-slate-500 font-semibold tracking-wider">Precinct</span>
+                            <span id="eid-precinct" class="text-xs font-medium text-slate-800"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- QR Code Section -->
+                <div class="px-6 pb-8 text-center flex flex-col items-center">
+                    <p class="text-[10px] text-slate-400 uppercase tracking-widest mb-3">Scan for Attendance</p>
+                    <div id="eid-qrcode" class="p-2 bg-white border-2 border-slate-100 rounded-xl inline-block shadow-sm"></div>
+                </div>
+                
+                <!-- Status Strip -->
+                <div id="eid-status-strip" class="h-2 w-full bg-slate-500"></div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('script')
     <script src="{{ asset('assets/js/crud-helper.js?v=') }}"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const eidModal = document.getElementById('eidModal');
+
+            // Open e-ID Modal
+            document.querySelectorAll('.open-eid-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+
+                    // Populate Text Fields
+                  // Populate Text Fields
+                    const name = this.dataset.name;
+                    document.getElementById('eid-name').innerText = name;
+                    document.getElementById('eid-avatar').innerText = name.charAt(0);
+                    document.getElementById('eid-role').innerText = this.dataset.role;
+                    document.getElementById('eid-number').innerText = this.dataset.membership_number;
+                    document.getElementById('eid-team').innerText = this.dataset.team;
+                    document.getElementById('eid-voter-status').innerText = this.dataset.voter_status;
+                    document.getElementById('eid-precinct').innerText = this.dataset.precinct;
+                    
+                    // Format Location
+                    const brgy = this.dataset.barangay !== 'N/A' ? this.dataset.barangay + ', ' : '';
+                    document.getElementById('eid-location').innerText = brgy + this.dataset.city;
+
+                    // Handle Status Strip Color
+                    const statusStrip = document.getElementById('eid-status-strip');
+                    if (this.dataset.status === "1") {
+                        statusStrip.className = "h-2 w-full bg-emerald-500";
+                    } else {
+                        statusStrip.className = "h-2 w-full bg-red-500";
+                    }
+
+                    // Generate QR Code
+                    const qrContainer = document.getElementById('eid-qrcode');
+                    qrContainer.innerHTML = ''; // Clear previous QR
+
+                    if (this.dataset.token) {
+                        new QRCode(qrContainer, {
+                            text: this.dataset.token,
+                            width: 140,
+                            height: 140,
+                            colorDark: "#0f172a",
+                            colorLight: "#ffffff",
+                            correctLevel: QRCode.CorrectLevel.H
+                        });
+                    } else {
+                        qrContainer.innerHTML =
+                            '<span class="text-xs text-red-500 font-medium">No Token</span>';
+                    }
+
+                    // Show Modal
+                    eidModal.classList.remove('hidden');
+                    eidModal.classList.add('flex');
+                    document.body.style.overflow = 'hidden'; // Prevent background scrolling
+                });
+            });
+
+            // Close e-ID Modal
+            document.querySelectorAll('.close-eid-modal').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    eidModal.classList.add('hidden');
+                    eidModal.classList.remove('flex');
+                    document.body.style.overflow = ''; // Restore scrolling
+                });
+            });
+
+            // Close if clicking outside the card
+            eidModal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    eidModal.classList.add('hidden');
+                    eidModal.classList.remove('flex');
+                    document.body.style.overflow = '';
+                }
+            });
+        });
+    </script>
 @endpush
