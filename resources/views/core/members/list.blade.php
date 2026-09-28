@@ -12,11 +12,13 @@
                 <p class="text-sm text-slate-500 mt-1">Manage constituents, view e-IDs, and assign teams.</p>
             </div>
             <div class="mt-4 md:mt-0">
+                @can('manage_members')
                 <button type="button" data-target="#memberModal" data-role="fill-modal" data-mode="create"
                     data-action="{{ route('members.store') }}" data-module="Member"
                     class="open-modal-btn inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors shadow-sm">
                     <i class="fa-solid fa-user-plus mr-2"></i> Register Member
                 </button>
+                @endcan
             </div>
         </div>
 
@@ -102,10 +104,16 @@
                             <tr class="hover:bg-slate-50/50 transition-colors group">
                                 <td class="px-6 py-4">
                                     <div class="flex items-center">
-                                        <div
-                                            class="h-10 w-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm mr-3 uppercase flex-shrink-0">
-                                            {{ substr($member->name, 0, 1) }}
-                                        </div>
+                                        @if ($member->profile_photo_path)
+                                            <img src="{{ asset('storage/' . $member->profile_photo_path) }}"
+                                                alt="{{ $member->name }}"
+                                                class="h-10 w-10 rounded-full object-cover mr-3 flex-shrink-0">
+                                        @else
+                                            <div
+                                                class="h-10 w-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-sm mr-3 uppercase flex-shrink-0">
+                                                {{ substr($member->name, 0, 1) }}
+                                            </div>
+                                        @endif
                                         <div>
                                             <div class="font-medium text-slate-900">{{ $member->name }}</div>
                                             <div class="text-xs text-slate-500 mt-0.5">
@@ -172,9 +180,11 @@
                                             data-precinct="{{ $member->precinct_no ?? 'N/A' }}"
                                             data-voter_status="{{ $member->voter_status === 'registered' ? 'Registered Voter' : 'Unregistered' }}"
                                             data-status="{{ $member->status }}" data-token="{{ $member->qr_token }}"
+                                            data-photo="{{ $member->profile_photo_path ? asset('storage/' . $member->profile_photo_path) : '' }}"
                                             title="View Digital e-ID">
                                             <i class="fa-solid fa-id-badge text-lg"></i>
                                         </button>
+                                        @can('manage_members')
                                         <button type="button" data-target="#memberModal" data-role="fill-modal"
                                             data-mode="edit" data-action="{{ route('members.update', $member->id) }}"
                                             data-method="PUT" data-module="Member" data-name="{{ $member->name }}"
@@ -199,6 +209,7 @@
                                             title="Delete">
                                             <i class="fa-regular fa-trash-can"></i>
                                         </button>
+                                        @endcan
 
                                     </div>
                                 </td>
@@ -246,7 +257,7 @@
                 </button>
             </div>
 
-            <form action="" method="POST" class="flex flex-col flex-1 overflow-hidden">
+            <form action="" method="POST" enctype="multipart/form-data" class="flex flex-col flex-1 overflow-hidden">
                 @csrf
 
                 <div class="p-6 space-y-6 overflow-y-auto flex-1 custom-scrollbar">
@@ -256,6 +267,13 @@
                         <h6 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Basic Information
                         </h6>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-slate-300 mb-1">Profile Photo</label>
+                                <input type="file" name="profile_photo" id="profile_photo"
+                                    accept="image/jpeg,image/png,image/webp"
+                                    class="w-full bg-slate-900 border border-slate-600 text-slate-300 rounded-lg px-4 py-2.5 file:mr-4 file:rounded-md file:border-0 file:bg-blue-600 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-white hover:file:bg-blue-700">
+                                <p class="mt-1 text-xs text-slate-500">JPG, PNG, or WebP. Maximum size: 2 MB.</p>
+                            </div>
                             <div class="md:col-span-2">
                                 <label class="block text-sm font-medium text-slate-300 mb-1">Full Name <span
                                         class="text-red-500">*</span></label>
@@ -503,7 +521,17 @@
                   // Populate Text Fields
                     const name = this.dataset.name;
                     document.getElementById('eid-name').innerText = name;
-                    document.getElementById('eid-avatar').innerText = name.charAt(0);
+                    const avatar = document.getElementById('eid-avatar');
+                    avatar.innerHTML = '';
+                    if (this.dataset.photo) {
+                        const image = document.createElement('img');
+                        image.src = this.dataset.photo;
+                        image.alt = name;
+                        image.className = 'w-full h-full object-cover rounded-full';
+                        avatar.appendChild(image);
+                    } else {
+                        avatar.innerText = name.charAt(0);
+                    }
                     document.getElementById('eid-role').innerText = this.dataset.role;
                     document.getElementById('eid-number').innerText = this.dataset.membership_number;
                     document.getElementById('eid-team').innerText = this.dataset.team;

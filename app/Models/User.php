@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -49,7 +50,7 @@ class User extends Authenticatable
         // External Integrations
         'registered_from',
         'external_id',
-        'coordinator_id'
+        'coordinator_id',
     ];
 
     /**
@@ -88,6 +89,19 @@ class User extends Authenticatable
     public function recruits()
     {
         return $this->hasMany(User::class, 'coordinator_id');
+    }
+
+    /**
+     * Limit member records to those assigned to a Team Leader.
+     * Other roles retain their normal directory visibility.
+     */
+    public function scopeVisibleTo(Builder $query, User $viewer): Builder
+    {
+        if ($viewer->role?->name === 'Team Leader') {
+            $query->where('coordinator_id', $viewer->id);
+        }
+
+        return $query;
     }
 
     /**

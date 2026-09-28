@@ -1,4 +1,5 @@
 <?php
+
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
@@ -13,11 +14,16 @@ class UserRoleSeeder extends Seeder
             ['name' => 'National Admin', 'permissions' => json_encode(['manage_users', 'manage_events', 'view_reports'])],
             ['name' => 'Regional Coordinator', 'permissions' => json_encode(['manage_regional_users', 'manage_events'])],
             ['name' => 'City Coordinator', 'permissions' => json_encode(['manage_city_users'])],
-            ['name' => 'Team Leader', 'permissions' => json_encode(['manage_team'])],
+            ['name' => 'Team Leader', 'permissions' => json_encode(['manage_team', 'view_members', 'manage_members'])],
             ['name' => 'Event Staff', 'permissions' => json_encode(['scan_qr'])],
             ['name' => 'Member', 'permissions' => json_encode(['view_profile', 'view_events'])],
         ];
 
-        DB::table('user_roles')->insert($roles);
+        foreach ($roles as $role) {
+            DB::table('user_roles')->updateOrInsert(
+                ['name' => $role['name']],
+                $role
+            );
+        }
     }
 }
