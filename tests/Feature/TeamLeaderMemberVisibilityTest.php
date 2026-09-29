@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\UserRole;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
@@ -109,6 +110,9 @@ class TeamLeaderMemberVisibilityTest extends TestCase
         $this->actingAs($leader)
             ->post(route('members.store'), $this->memberPayload([
                 'name' => 'New Assigned Member',
+                'email' => 'new.member@example.com',
+                'password' => 'SecurePassword123',
+                'password_confirmation' => 'SecurePassword123',
                 'profile_photo' => UploadedFile::fake()->image('new-member.jpg'),
             ]))
             ->assertRedirect(route('members.index'));
@@ -116,20 +120,36 @@ class TeamLeaderMemberVisibilityTest extends TestCase
         $member = User::where('name', 'New Assigned Member')->firstOrFail();
         $this->assertSame($leader->id, $member->coordinator_id);
         $this->assertSame($leader->team_id, $member->team_id);
+        $this->assertTrue(Hash::check('SecurePassword123', $member->password));
         Storage::disk('public')->assertExists($member->profile_photo_path);
         $oldPhotoPath = $member->profile_photo_path;
 
         $this->actingAs($leader)
             ->put(route('members.update', $member), $this->memberPayload([
                 'name' => 'Updated Assigned Member',
+                'email' => 'new.member@example.com',
+                'password' => 'UpdatedPassword123',
+                'password_confirmation' => 'UpdatedPassword123',
                 'profile_photo' => UploadedFile::fake()->image('updated-member.png'),
             ]))
             ->assertRedirect(route('members.index'));
 
         $member->refresh();
         $this->assertSame('Updated Assigned Member', $member->name);
+        $this->assertTrue(Hash::check('UpdatedPassword123', $member->password));
         Storage::disk('public')->assertMissing($oldPhotoPath);
         Storage::disk('public')->assertExists($member->profile_photo_path);
+
+        $passwordHash = $member->password;
+
+        $this->actingAs($leader)
+            ->put(route('members.update', $member), $this->memberPayload([
+                'name' => 'Updated Without Password Change',
+                'email' => 'new.member@example.com',
+            ]))
+            ->assertRedirect(route('members.index'));
+
+        $this->assertSame($passwordHash, $member->fresh()->password);
     }
 
     public function test_admin_can_upload_a_members_profile_photo_and_it_appears_on_the_eid(): void
@@ -167,6 +187,29 @@ class TeamLeaderMemberVisibilityTest extends TestCase
             ->get(route('members.eid', $member))
             ->assertOk()
             ->assertSee('storage/'.$member->profile_photo_path, false);
+    }
+
+    public function test_creating_login_credentials_requires_a_confirmed_password(): void
+    {
+        $adminRole = UserRole::create([
+            'name' => 'Super Admin',
+            'permissions' => ['all'],
+        ]);
+        $admin = User::factory()->create([
+            'password' => 'password',
+            'user_role_id' => $adminRole->id,
+        ]);
+
+        $this->actingAs($admin)
+            ->post(route('members.store'), $this->memberPayload([
+                'name' => 'Member Without Password',
+                'email' => 'missing.password@example.com',
+            ]))
+            ->assertSessionHasErrors('password');
+
+        $this->assertDatabaseMissing('users', [
+            'email' => 'missing.password@example.com',
+        ]);
     }
 
     private function createLeaderAndMembers(): array

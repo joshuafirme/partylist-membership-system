@@ -285,11 +285,35 @@
                                 <input type="text" name="mobile_number" id="mobile_number" placeholder="09xxxxxxxxx"
                                     class="w-full bg-slate-900 border border-slate-600 text-white rounded-lg px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors">
                             </div>
-                            <div>
+                        </div>
+                    </div>
+
+                    <!-- Login Credentials -->
+                    <div class="pt-4 border-t border-slate-700">
+                        <h6 class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-3">Login Credentials
+                        </h6>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="md:col-span-2">
                                 <label class="block text-sm font-medium text-slate-300 mb-1">Email Address</label>
-                                <input type="email" name="email" id="email"
+                                <input type="email" name="email" id="email" autocomplete="username"
                                     class="w-full bg-slate-900 border border-slate-600 text-white rounded-lg px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors">
                             </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-1">Password</label>
+                                <input type="password" name="password" id="password" minlength="8"
+                                    autocomplete="new-password"
+                                    class="w-full bg-slate-900 border border-slate-600 text-white rounded-lg px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-300 mb-1">Confirm Password</label>
+                                <input type="password" name="password_confirmation" id="password_confirmation"
+                                    minlength="8" autocomplete="new-password"
+                                    class="w-full bg-slate-900 border border-slate-600 text-white rounded-lg px-4 py-2.5 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors">
+                            </div>
+                            <p class="md:col-span-2 text-xs text-slate-500">
+                                A password is required when creating credentials. Leave both password fields blank when
+                                editing to keep the current password.
+                            </p>
                         </div>
                     </div>
 

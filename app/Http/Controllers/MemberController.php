@@ -72,7 +72,8 @@ class MemberController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'nullable|email|unique:users,email',
+            'email' => 'nullable|required_with:password|email|unique:users,email',
+            'password' => 'nullable|required_with:email|string|min:8|confirmed',
             'mobile_number' => 'nullable|string|max:20|unique:users,mobile_number',
             'user_role_id' => [
                 'required',
@@ -102,8 +103,6 @@ class MemberController extends Controller
         // Auto-generate a secure UUID for the QR code
         $validated['qr_token'] = (string) Str::uuid();
 
-        // Default password for manually created members
-        $validated['password'] = bcrypt('password123');
         $validated['registered_from'] = 'admin_panel';
 
         User::create($validated);
@@ -122,7 +121,8 @@ class MemberController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => ['nullable', 'email', Rule::unique('users')->ignore($member->id)],
+            'email' => ['nullable', 'required_with:password', 'email', Rule::unique('users')->ignore($member->id)],
+            'password' => 'nullable|string|min:8|confirmed',
             'mobile_number' => ['nullable', 'string', 'max:20', Rule::unique('users')->ignore($member->id)],
             'user_role_id' => [
                 'required',
@@ -141,6 +141,10 @@ class MemberController extends Controller
 
         $validated = $this->enforceTeamLeaderAssignment($validated, $request->user());
         $validated = $this->storeProfilePhoto($validated, $request);
+
+        if (empty($validated['password'])) {
+            unset($validated['password']);
+        }
 
         // Auto-generate Membership Number ONLY if they don't have one yet
         if (empty($member->membership_number)) {
