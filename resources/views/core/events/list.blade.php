@@ -11,11 +11,13 @@
                 <p class="text-sm text-slate-500 mt-1">Schedule rallies, meetings, and volunteer activities.</p>
             </div>
             <div class="mt-4 md:mt-0">
+                @can('manage_events')
                 <button type="button" data-target="#eventModal" data-role="fill-modal" data-mode="create"
                     data-action="{{ route('events.store') }}" data-module="Event"
                     class="open-modal-btn inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors shadow-sm">
                     <i class="fa-solid fa-plus mr-2"></i> Create Event
                 </button>
+                @endcan
             </div>
         </div>
 
@@ -58,7 +60,9 @@
                             <th class="px-6 py-4">Date & Time</th>
                             <th class="px-6 py-4 text-center">Attendees</th>
                             <th class="px-6 py-4">Status</th>
-                            <th class="px-6 py-4 text-right">Actions</th>
+                            @can('manage_events')
+                                <th class="px-6 py-4 text-right">Actions</th>
+                            @endcan
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
@@ -99,7 +103,8 @@
                                         </span>
                                     @endif
                                 </td>
-                                <td class="px-6 py-4 text-right whitespace-nowrap">
+                                @can('manage_events')
+                                    <td class="px-6 py-4 text-right whitespace-nowrap">
                                     <div class="flex items-center justify-end space-x-2">
                                         
                                         <button type="button" data-target="#eventModal"
@@ -126,7 +131,8 @@
                                         </button>
 
                                     </div>
-                                </td>
+                                    </td>
+                                @endcan
                             </tr>
                         @empty
                             <tr>
@@ -152,6 +158,7 @@
         </div>
     </div>
 
+    @can('manage_events')
     <div id="eventModal" class="modal fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/75 backdrop-blur-sm transition-opacity" aria-hidden="true">
         <div class="relative w-full max-w-lg bg-slate-800 border border-slate-700 rounded-xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
 
@@ -214,6 +221,7 @@
             </form>
         </div>
     </div>
+    @endcan
 @endsection
 
 @push('script')

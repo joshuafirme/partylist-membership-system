@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Team;
-use App\Models\Event;
 use App\Models\Attendance;
-use Illuminate\Http\Request;
+use App\Models\Event;
+use App\Models\Team;
+use Illuminate\Support\Facades\Gate;
 
 class DashboardController extends Controller
 {
@@ -15,15 +15,23 @@ class DashboardController extends Controller
     public function index()
     {
         // Fetch top-level statistics
-        $activeEventsCount = Event::where('status', 1)->count();
-        $totalTeamsCount = Team::count();
-        $recentAttendancesCount = Attendance::count();
+        $activeEventsCount = Gate::allows('view_events')
+            ? Event::where('status', 1)->count()
+            : null;
+        $totalTeamsCount = Gate::allows('view_teams')
+            ? Team::count()
+            : null;
+        $recentAttendancesCount = Gate::allows('view_attendances')
+            ? Attendance::count()
+            : null;
 
         // Fetch the 5 most recent attendances for the activity feed
-        $recentActivities = Attendance::with(['member', 'event'])
-            ->latest('time_in')
-            ->take(5)
-            ->get();
+        $recentActivities = Gate::allows('view_attendances')
+            ? Attendance::with(['member', 'event'])
+                ->latest('time_in')
+                ->take(5)
+                ->get()
+            : collect();
 
         return view('core.dashboard', compact(
             'activeEventsCount',

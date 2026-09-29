@@ -11,11 +11,13 @@
                 <p class="text-sm text-slate-500 mt-1">Organize users into operational groups.</p>
             </div>
             <div class="mt-4 md:mt-0">
+                @can('manage_teams')
                 <button type="button" data-target="#teamModal" data-role="fill-modal" data-mode="create"
                     data-action="{{ route('teams.store') }}" data-module="Team"
                     class="open-modal-btn inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors shadow-sm">
                     <i class="fa-solid fa-plus mr-2"></i> Add New Team
                 </button>
+                @endcan
             </div>
         </div>
 
@@ -58,7 +60,9 @@
                             <th class="px-6 py-4 w-1/3">Description</th>
                             <th class="px-6 py-4">Status</th>
                             <th class="px-6 py-4">Created Date</th>
-                            <th class="px-6 py-4 text-right">Actions</th>
+                            @can('manage_teams')
+                                <th class="px-6 py-4 text-right">Actions</th>
+                            @endcan
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
@@ -90,7 +94,8 @@
                                 <td class="px-6 py-4 text-sm text-slate-600">
                                     {{ $team->created_at->format('M d, Y') }}
                                 </td>
-                                <td class="px-6 py-4 text-right whitespace-nowrap">
+                                @can('manage_teams')
+                                    <td class="px-6 py-4 text-right whitespace-nowrap">
                                     <div class="flex items-center justify-end space-x-2">
                                         
                                         <button type="button" data-target="#teamModal"
@@ -115,7 +120,8 @@
                                         </button>
 
                                     </div>
-                                </td>
+                                    </td>
+                                @endcan
                             </tr>
                         @empty
                             <tr>
@@ -141,6 +147,7 @@
         </div>
     </div>
 
+    @can('manage_teams')
     <div id="teamModal" class="modal fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/75 backdrop-blur-sm transition-opacity" aria-hidden="true">
         <div class="relative w-full max-w-md bg-slate-800 border border-slate-700 rounded-xl shadow-2xl overflow-hidden">
 
@@ -190,6 +197,7 @@
             </form>
         </div>
     </div>
+    @endcan
 @endsection
 
 @push('script')

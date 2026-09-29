@@ -12,11 +12,13 @@
                 <p class="text-sm text-slate-500 mt-1">Monitor real-time event check-ins and execute manual overrides.</p>
             </div>
             <div class="mt-4 md:mt-0 flex space-x-3">
+                @can('manage_attendances')
                 <button type="button" data-target="#overrideModal" data-role="fill-modal" data-mode="create"
                     data-action="{{ route('attendances.store') }}" data-module="Manual Check-In"
                     class="open-modal-btn inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors shadow-sm">
                     <i class="fa-solid fa-user-check mr-2"></i> Manual Override
                 </button>
+                @endcan
             </div>
         </div>
 
@@ -67,7 +69,9 @@
                             <th class="px-6 py-4">Target Event</th>
                             <th class="px-6 py-4">Verification Context</th>
                             <th class="px-6 py-4">Time Registered</th>
-                            <th class="px-6 py-4 text-right">Actions</th>
+                            @can('manage_attendances')
+                                <th class="px-6 py-4 text-right">Actions</th>
+                            @endcan
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
@@ -99,7 +103,8 @@
                                     <div>{{ $log->time_in->format('h:i:s A') }}</div>
                                     <div class="text-xs text-blue-600 mt-0.5 font-medium">{{ $log->time_in->diffForHumans() }}</div>
                                 </td>
-                                <td class="px-6 py-4 text-right whitespace-nowrap">
+                                @can('manage_attendances')
+                                    <td class="px-6 py-4 text-right whitespace-nowrap">
                                     <div class="flex items-center justify-end">
                                         <button type="button" 
                                             class="delete-btn p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
@@ -110,7 +115,8 @@
                                             <i class="fa-regular fa-trash-can"></i>
                                         </button>
                                     </div>
-                                </td>
+                                    </td>
+                                @endcan
                             </tr>
                         @empty
                             <tr>
@@ -137,6 +143,7 @@
     </div>
 
     <!-- ================= Manual Override Modal ================= -->
+    @can('manage_attendances')
     <div id="overrideModal" class="modal fixed inset-0 z-50 hidden items-center justify-center bg-slate-900/75 backdrop-blur-sm transition-opacity" aria-hidden="true">
         <div class="relative w-full max-w-md bg-slate-800 border border-slate-700 rounded-xl shadow-2xl overflow-hidden">
 
@@ -185,6 +192,7 @@
             </form>
         </div>
     </div>
+    @endcan
 @endsection
 
 @push('script')

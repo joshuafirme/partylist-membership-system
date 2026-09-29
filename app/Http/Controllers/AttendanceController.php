@@ -6,6 +6,7 @@ use App\Models\Attendance;
 use App\Models\Event;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class AttendanceController extends Controller
 {
@@ -23,21 +24,23 @@ class AttendanceController extends Controller
         }
 
         // Search by Member Name or Email
-      if ($request->filled('search')) {
+        if ($request->filled('search')) {
             $search = $request->search;
             $query->whereHas('member', function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+                    ->orWhere('email', 'like', "%{$search}%");
             });
         }
 
         $attendances = $query->orderBy('time_in', 'desc')->paginate(15);
-        
+
         // Fetch active datasets to populate filters and manual override modals
         $events = Event::where('status', 1)->orderBy('title')->get();
-        $members = User::whereHas('role', function($q) {
-            $q->where('name', 'Member');
-        })->orderBy('name')->get();
+        $members = Gate::allows('manage_attendances')
+            ? User::whereHas('role', function ($q) {
+                $q->where('name', 'Member');
+            })->orderBy('name')->get()
+            : collect();
 
         return view('core.attendances.list', compact('attendances', 'events', 'members'));
     }

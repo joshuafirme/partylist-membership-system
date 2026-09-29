@@ -8,6 +8,7 @@
 
         <!-- Key Metrics Grid -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            @can('view_events')
             <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-sm font-medium text-slate-500">Active Events</h3>
@@ -17,7 +18,9 @@
                 </div>
                 <p class="text-3xl font-semibold text-slate-900">{{ number_format($activeEventsCount) }}</p>
             </div>
+            @endcan
 
+            @can('view_teams')
             <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-sm font-medium text-slate-500">Total Teams</h3>
@@ -27,7 +30,9 @@
                 </div>
                 <p class="text-3xl font-semibold text-slate-900">{{ number_format($totalTeamsCount) }}</p>
             </div>
+            @endcan
 
+            @can('view_attendances')
             <div class="bg-white p-6 rounded-xl border border-slate-100 shadow-sm">
                 <div class="flex items-center justify-between mb-4">
                     <h3 class="text-sm font-medium text-slate-500">Total Attendances</h3>
@@ -37,9 +42,11 @@
                 </div>
                 <p class="text-3xl font-semibold text-slate-900">{{ number_format($recentAttendancesCount) }}</p>
             </div>
+            @endcan
         </div>
 
         <!-- Recent Activity Feed -->
+        @can('view_attendances')
         <div class="bg-white rounded-xl border border-slate-100 shadow-sm p-6">
             <h3 class="text-lg font-medium text-slate-900 mb-4">Recent Activity</h3>
             
@@ -80,5 +87,6 @@
                 </div>
             @endif
         </div>
+        @endcan
     </div>
 @endsection
